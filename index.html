@@ -22,17 +22,40 @@
       border: solid 2px #fefefe;
       border-radius: 50%;  */
     }
-    
+    .button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .toto {
+      border: solid 2px #030303;
+      border-radius: 50%; 
+      height: 50px;
+      width: 50px;
+    }
     filter {
-      display: none;
+      /* display: none; */
+    }
+    h1 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   </style>
 </head>
-<body onmouseup="onMouseUnClick()" onmousedown="onMouseClick()">
-  <h1>CLICK SUR LA PAGE</h1>
-  <div class="mouse--follower">
+<!-- <body onmouseup="onMouseUnClick()" onmousedown="onMouseClick()"> -->
+  <body>
+    <h1>Survole moi bg</h1>
+  <!-- <div class="mouse--follower">
 
-    <!-- <circle cx="100" cy="100" r="100" style="filter: url(#displacementFilter)"/> -->
+    
     
     <svg width="151" height="151" viewBox="0 0 151 151" fill="none" xmlns="http://www.w3.org/2000/svg">
       <filter  id="displacementFilter" x="-10%"  y="-10%"  width="120%"  height="120%"  
@@ -44,22 +67,56 @@
       </filter>
       <circle style="filter: url(#displacementFilter)" cx="75.5" cy="75.5" r="75" stroke="black"/>
       </svg>
-  </div>
+  </div> -->
+  
+  <!-- ///  -->
+  <div class="wrapper">
+    <div style="filter: url(#noise);" class="button">
+      <div class="toto"></div>
+    </div>
+
+    <svg viewBox="0 0 180 100">
+      <filter id='noise' x='0%' y='0%' width='100%' height='100%'>
+          <feTurbulence type="fractalNoise" baseFrequency="0 0.000001" result="NOISE" numOctaves="2"/>
+        <feDisplacementMap in="SourceGraphic" in2="NOISE" scale="30" xChannelSelector="R" yChannelSelector="R"></feDisplacementMap>  
+    </filter>    
+    </svg>
+      </div>
+      
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script>
   <script>
     document.body.addEventListener('mousemove', (event) => {
-      gsap.to('.mouse--follower', 1, { top: event.pageY, ease: Power4.easeOut })
-      gsap.to('.mouse--follower', 1, { left: event.pageX, ease: Power4.easeOut })
+      gsap.to('.button', 1, { top: event.pageY, ease: Power4.easeOut })
+      gsap.to('.button', 1, { left: event.pageX, ease: Power4.easeOut })
     })
-    function onMouseClick () {
-      gsap.to('.mouse--follower', 0.3, { scale: 2, opacity: 0})
-      gsap.to('filter', 0.5, {display: 'inherit'})
-    }
-    function onMouseUnClick () {
-      gsap.to('.mouse--follower', 0.3, { scale: 1, opacity: 1})
-      gsap.to('filter', 0.5, {display: 'none'})
+    // function onMouseClick () {
+    //   gsap.to('.mouse--follower', 0.3, { scale: 2,  onComplete: () => { gsap.to('filter', 0.5, {display: 'none'}) }})
+    //   gsap.to('filter', 0.5, {display: 'inherit'})
+    // }
+    // function onMouseUnClick () {
+    //   gsap.to('.mouse--follower', 0.3, { scale: 1, opacity: 1})
+    //   gsap.to('filter', 0.5, {display: 'none'})
       
-    }
+    // }
+    var bt = document.querySelectorAll('.button')[0],
+	turbVal = { val: 0.000001 },
+	turb = document.querySelectorAll('#noise feTurbulence')[0],
+	
+	btTl = new TimelineLite({ paused: true, onUpdate: function() {
+  turb.setAttribute('baseFrequency', '0 ' + turbVal.val);
+} });
+
+btTl.to(turbVal, 0.2, { val: 0.2 }, 'start')
+    .to('.button', 0.2, { scale: 2 }, 'start')
+    .to(turbVal, 0.2, { val: 0.000001 })
+
+document.querySelector('h1').addEventListener('mouseover', function() {
+  btTl.restart();
+});
+document.querySelector('h1').addEventListener('mouseleave', function() {
+  gsap.to('.button', 0.2, { scale: 1 }, 'start')
+});
+
   </script>
 </body>
 </html>
